@@ -31,7 +31,6 @@ else{
 ## summary contains evaluation info for used partition
 my $summary;
 
-
 ## part: array of [SEQ700#26#65#+,42.40,-,1.2,1.1,1,63,63]
 my $part = read_partition($part_file);
 my @res_clus_sort = sort { $a <=> $b } unique( map { $_->[5] } @{$part} );
@@ -66,7 +65,7 @@ foreach my $res_idx (@res_todo) {
   ## read in model ids of a final(merged) cluster, could be >1 orig clusters in case of merging
   my %model_ids = ();
 
-  foreach my $f (@modTreeFiles) {
+  foreach my $f (sort(@modTreeFiles)) {
     my @model_fa = read_fasta_file("$f");
     map { $model_ids{$_} = 1 } @{ $model_fa[1] };
   }
@@ -90,9 +89,10 @@ foreach my $res_idx (@res_todo) {
     my $score = $clus_hits{$key}->{PART}->[1];
     my $clus  = $clus_hits{$key}->{PART}->[4];
     print OUT "CLUSTER  $clus_idx  CM_SCORE $score MODEL $clus ";
-    my  $str = $fa_scan[2]->{ $clus_hits{$key}->{FRAG}->{SEQID} };
-    my @orId = split / /, $str;
-    print OUT $orId[3] .  "\n";
+    print OUT $fa_scan[2]->{ $clus_hits{$key}->{FRAG}->{SEQID} } . "\n";
+    #my  $str = $fa_scan[2]->{ $clus_hits{$key}->{FRAG}->{SEQID} };
+    #my @orId = split / /, $str;
+    #print OUT $orId[3] .  "\n";
 
   }
 
@@ -102,9 +102,10 @@ foreach my $res_idx (@res_todo) {
     my $score = $clus_hits{$key}->{PART}->[1];
     my $clus  = $clus_hits{$key}->{PART}->[4];
     print OUT "CLUSTER $clus_idx   CM_SCORE $score " . $clus_hits{$key}->{TYPE} . " $clus ";
-    my  $str = $fa_scan[2]->{ $clus_hits{$key}->{FRAG}->{SEQID}};
-    my @orId = split / /, $str;
-    print OUT $orId[3] .  "\n";
+    print OUT $fa_scan[2]->{ $clus_hits{$key}->{FRAG}->{SEQID} } . "\n";
+    #my  $str = $fa_scan[2]->{ $clus_hits{$key}->{FRAG}->{SEQID}};
+    #my @orId = split / /, $str;
+    #print OUT $orId[3] .  "\n";
   }
 
   close(OUT);
