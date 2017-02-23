@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import matplotlib.patches as mpatches
 from collections import defaultdict
@@ -16,24 +20,30 @@ def plot_bar(ranges, colors, orig_names, cluster_nums):
     ax.set_xlabel('position in sequence')
     ax.set_yticklabels(['']+[k+'-'+orig_names[k] for k in sorted(ranges.keys())])
     ax.grid(True)
-    fig.suptitle('Structure motif prediction for Ig-Kapp lncRNA\nRegions with same color are prediticted to have similar structures')
+    fig.suptitle('Structure motif prediction\nRegions with same color are prediticted to have similar structures')
     # Add the legend
     patches = [mpatches.Patch(color=cluster_nums[lab], label=lab) for lab in sorted(cluster_nums)]
     ax.legend(handles=patches, loc='best')  # , bbox_to_anchor=(1, 0.5), loc='center left')
-    plt.savefig("motif_plot.png")
+    plt.savefig("motif_plot.png", bbox_inches='tight')
 
 
 def parse_clusters():
+    currentdir_files = sorted(list(glob.glob('*')))
+    print ("currentdir_files are: ", currentdir_files)
+    print ("RESULTS_files are: ", sorted(list(glob.glob('RESULTS/*'))))
+
     cluster_files = sorted(list(glob.glob('RESULTS/*.cluster.all')))
     if len(cluster_files) == 0:
         raise RuntimeError('Expected cluster.all search path is empty:{}'.format(cluster_files))
     palette = itertools.cycle(sns.color_palette("Set2", len(cluster_files)))
+
+
     ranges = defaultdict(list)
     colors = defaultdict(list)
     orig_names = defaultdict(list)
     cluster_nums = defaultdict(list)
     for cluster_file in cluster_files:
-        cluster_color = palette.next()
+        cluster_color = next(palette)
         df_cluster = pd.read_csv(cluster_file, sep='\s+', header=None)
         for irow, row in df_cluster.iterrows():
             seq, start, end, strand = row[0].split("#")
@@ -44,6 +54,7 @@ def parse_clusters():
             assert row[9] == 'ORIGHEAD'
             orig_names[seq] = row[10]
     return ranges, colors, orig_names, cluster_nums
+
 
 my_ranges, my_colors, my_orig_names, my_cluster_nums = parse_clusters()
 plot_bar(my_ranges, my_colors, my_orig_names, my_cluster_nums)
