@@ -1,6 +1,6 @@
 <tool id="glob_report" name="cluster_collection_report" version="0.1">
   <requirements>
-    <requirement type="package" version="0.1.10">graphclust-wrappers</requirement>
+    <requirement type="package" version="0.1.12">graphclust-wrappers</requirement>
     <requirement type="package" version='0.5'>perl-array-utils</requirement>
     <requirement type="package" version='0.18.1'>scikit-learn</requirement>
     <requirement type="package" version='1.8.10'>locarna</requirement>
@@ -18,21 +18,26 @@
     <![CDATA[
         unzip $FASTA  &> /dev/null &&
 
+          mkdir ./CMSEARCH &&
+          mkdir ./MODEL &&
+
         #set $inputFiles = ""
 
         #for $cms_res in $cmsearch_results:
-            #set $inputFiles += str($cms_res)+','
+            ###set $inputFiles += str($cms_res.element_identifier)+','
+          ln -f -s  '$cms_res' ./CMSEARCH/$cms_res.element_identifier &&
         #end for
         #set $inputFiles = $inputFiles[:-1]
 
         #set $inputFilesTrees = ""
 
         #for $mods in $model_tree_files:
-            #set $inputFilesTrees += str($mods)+','
+            ###set $inputFilesTrees += str($mods.element_identifier)+','
+            ln -f -s  '$mods' ./MODEL/$mods.element_identifier &&
         #end for
         #set $inputFilesTrees = $inputFilesTrees[:-1]
         'glob_res.pl'
-                '$inputFiles'
+                ##'$inputFiles'
                 $merge_cluster_ol
                 $merge_overlap
                 $min_cluster_size
@@ -41,12 +46,14 @@
                 $cm_bitscore_sig
                 $partition_type ''
                 $cut_type
-                '$inputFilesTrees'
+                ##'$inputFilesTrees'
                 $results_top_num
         #if  $iteration_num.iteration_num_selector:
           $iteration_num.CI
           $final_partition_soft
           $final_partition_used_cmsearch
+          '$combined_cm'
+
         #end if
 
         #if  str($advanced_opts.advanced_opts_selector) == "show":
@@ -83,6 +90,7 @@
         <param name="CI" type="integer" value="2" size="5" label="Number of current iteration "/>
         <param type="data" name="final_partition_soft" format="txt" />
         <param type="data" name="final_partition_used_cmsearch" format="txt" />
+        <param type="data" name="combined_cm" format="txt" />
       </when>
       <when value="false" ></when>
     </conditional>
@@ -143,6 +151,7 @@
     <data name="final_soft" format="txt" from_work_dir="RESULTS/partitions/final_partition.soft" label="soft_part"   />
     <data name="final_used_cmsearch" format="txt" from_work_dir="RESULTS/partitions/final_partition.used_cmsearch" label="final_partition_used_cmsearch"   />
     <data name="evaluation" format="txt" from_work_dir="RESULTS/evaluation.txt" label="evaluation_of_clusters"  />
+    <data name="combined_cm_out" format="txt" from_work_dir="combined_cm_out" label="combined_cmsearch_output"  />
     <collection name="clusters" type="list" label="CLUSTERS">
       <discover_datasets pattern="(?P&lt;name&gt;^.*\.all$)" directory="RESULTS"  />
     </collection>
