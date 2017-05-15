@@ -1,6 +1,6 @@
 <tool id="glob_report" name="cluster_collection_report" version="0.1">
   <requirements>
-    <requirement type="package" version="0.1.12">graphclust-wrappers</requirement>
+    <!--requirement type="package" version="0.1.12">graphclust-wrappers</requirement-->
     <requirement type="package" version='0.5'>perl-array-utils</requirement>
     <requirement type="package" version='0.18.1'>scikit-learn</requirement>
     <requirement type="package" version='1.8.10'>locarna</requirement>
@@ -36,7 +36,7 @@
             ln -f -s  '$mods' ./MODEL/$mods.element_identifier &&
         #end for
         #set $inputFilesTrees = $inputFilesTrees[:-1]
-        'glob_res.pl'
+        perl '/home/eteri/GraphClust/galaxy_wrappers/CollectResults/glob_res.pl'
                 ##'$inputFiles'
                 $merge_cluster_ol
                 $merge_overlap
